@@ -1,0 +1,8 @@
+# osx
+.DS_Store
+
+# builds
+build
+
+# node dependencies
+node_modules
