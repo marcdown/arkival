@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ipfs from './utils/ipfs';
 import logo from './logo.svg';
 import './App.css';
 
