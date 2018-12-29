@@ -16,3 +16,7 @@ input {
   position: absolute;
   z-index: -1;
 }
+
+.hidden {
+  display: none;
+}

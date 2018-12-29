@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BeatLoader } from 'react-spinners';
 import ipfs from './utils/ipfs';
 import './App.css';
 
@@ -8,7 +9,9 @@ class App extends Component {
 
 		this.state = {
       buffer: null,
-      ipfsHash: null
+      ipfsUrl: null,
+      loading: false,
+      generated: false
 		};
 	};
 
@@ -31,11 +34,19 @@ class App extends Component {
 
     // Save file to IPFS and set file hash
     if (this.state.buffer != null) {
+      this.setState({
+        loading: true,
+        generated: false
+      });
       const files = await ipfs.add(this.state.buffer);
       const hash = files[0].hash;
-      console.log('hash: ' + hash);
+      const url = 'https://ipfs.io/ipfs/' + hash
       
-      this.setState({ ipfsHash: hash });
+      this.setState({ 
+        ipfsUrl: url,
+        loading: false,
+        generated: true
+      });
     }
 	};
 
@@ -57,7 +68,15 @@ class App extends Component {
             </label>
           </div>
           <div>
-            <button className="f4 link pointer dim br2 ph3 pv2 mt4 dib white bg-near-black" onClick={this.onSubmit}>Upload</button>
+            <button className="f4 link pointer dim br2 ph4 pv2 mt4 dib white bg-near-black" onClick={this.onSubmit}>Upload</button>
+          </div>
+          <div className="mt4">
+            <BeatLoader sizeUnit={"px"} size={30} color={'#999999'} loading={this.state.loading}/>
+          </div>
+          <div className={this.state.generated ? '' : 'hidden'}>
+            <p className="f4 lh-copy measure">
+              <a className="black" href={this.state.ipfsUrl} rel="noopener noreferrer" target="_blank">Archived</a> using <a className="black" href="http://arkival.io" rel="noopener noreferrer" target="_blank">arkival.io</a>
+            </p>
           </div>
         </div>
       </div>
