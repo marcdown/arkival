@@ -3,22 +3,48 @@ import ipfs from './utils/ipfs';
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+		super(props);
+
+		this.state = {
+      buffer: null,
+      ipfsHash: null
+		};
+	};
 
   captureFile = (event) => {
+		event.stopPropagation();
+    event.preventDefault();
     const file = event.target.files[0];
-		console.log(file);
-  };
+		let reader = new window.FileReader();
+		reader.readAsArrayBuffer(file);
+		reader.onloadend = () => this.convertToBuffer(reader); 
+	};
 
-  onSubmit = (event) => {
-    console.log('Upload');
-  }
+	convertToBuffer = async (reader) => {
+		const buffer = await Buffer.from(reader.result);
+		this.setState({ buffer: buffer });
+	};
+
+  onSubmit = async (event) => {
+		event.preventDefault();
+
+    // Save file to IPFS and set file hash
+    if (this.state.buffer != null) {
+      const files = await ipfs.add(this.state.buffer);
+      const hash = files[0].hash;
+      console.log('hash: ' + hash);
+      
+      this.setState({ ipfsHash: hash });
+    }
+	};
 
   render() {
     return (
       <div className="App">
         <header className="mb5">
             <h1 className="f3 f1-m f-headline-l">arkival</h1>
-            <h2 className="f5 gray fw2 ttu tracked">Archive and timestamp your files using IPFS and Ethereum</h2>
+            <h2 className="f5 gray fw2 ttu tracked">Archive your files using IPFS</h2>
         </header>
         <div className="ph6 pv4 ba border-box">
           <div>
@@ -37,6 +63,6 @@ class App extends Component {
       </div>
     );
   }
-}
+};
 
 export default App;
